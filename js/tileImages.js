@@ -1,80 +1,49 @@
 window.onload = function() {
   //Aliases
-  let Container = PIXI.Container,
-    autoDetectRenderer = PIXI.autoDetectRenderer,
-    loader = PIXI.loader,
-    resources = PIXI.loader.resources,
-    TextureCache = PIXI.utils.TextureCache,
-    Texture = PIXI.Texture,
-    Sprite = PIXI.Sprite;
-  //Create a Pixi stage and renderer and add the
-  //renderer.view to the DOM
-  let stage = new Container(),
-    renderer = autoDetectRenderer(512, 512);
+  let Container = PIXI.Container
+  let autoDetectRenderer = PIXI.autoDetectRenderer
+  let loader = PIXI.loader
+  let resources = PIXI.loader.resources
+  let Sprite = PIXI.Sprite;
+  let TextureCache = PIXI.utils.TextureCache;
+  let Rectangle = PIXI.Rectangle;
+
+  //Create the stage and renderer
+  let stage = new Container()
+  let renderer = autoDetectRenderer(500, 500);
   document.body.appendChild(renderer.view);
-  //Load an image and run the `setup` function when it's done
+
+  //Load an image and call the `setup` function
   loader
-    .add("images/treasureHunter.json")
+    .add("../images/tileset.png")
     .load(setup);
-  //Define variables that might be used in more
-  //than one function
-  let dungeon, explorer, treasure, door, id;
 
   function setup() {
-    //There are two basic ways to create sprites from loaded texture
-    //atlases:
-    //1. Access the `TextureCache` directly
-    let dungeonTexture = TextureCache["dungeon.png"];
-    dungeon = new Sprite(dungeonTexture);
-    stage.addChild(dungeon);
-    //2. Access the texture using through the loader's `resources`:
-    explorer = new Sprite(
-      resources["images/treasureHunter.json"].textures["explorer.png"]
-    );
-    explorer.x = 68;
-    //Center the explorer vertically
-    explorer.y = stage.height / 2 - explorer.height / 2;
-    stage.addChild(explorer);
-    //Create an optional alias called `id` for all the texture atlas
-    //frame id textures.
-    let id = PIXI.loader.resources["images/treasureHunter.json"].textures;
-    //Make the treasure box using the alias
-    treasure = new Sprite(id["treasure.png"]);
-    stage.addChild(treasure);
-    //Position the treasure next to the right edge of the canvas
-    treasure.x = stage.width - treasure.width - 48;
-    treasure.y = stage.height / 2 - treasure.height / 2;
-    stage.addChild(treasure);
-    //Make the exit door
-    door = new Sprite(id["door.png"]);
-    door.position.set(32, 0);
-    stage.addChild(door);
-    //Make the blobs
-    let numberOfBlobs = 6,
-      spacing = 48,
-      xOffset = 150;
-    //Make as many blobs as there are `numberOfBlobs`
-    for (let i = 0; i < numberOfBlobs; i++) {
-      //Make a blob
-      let blob = new Sprite(id["blob.png"]);
-      //Space each blob horizontally according to the `spacing` value.
-      //`xOffset` determines the point from the left of the screen
-      //at which the first blob should be added.
-      let x = spacing * i + xOffset;
-      //Give the blob a random y position
-      //(`randomInt` is a custom function - see below)
-      let y = randomInt(0, stage.height - blob.height);
-      //Set the blob's position
-      blob.x = x;
-      blob.y = y;
-      //Add the blob sprite to the stage
-      stage.addChild(blob);
-    }
+
+
+    //Create the `tileset` sprite from the texture
+    var texture = TextureCache["../images/tileset.png"];
+    //Create a rectangle object that defines the position and
+    //size of the sub-image you want to extract from the texture
+    var rectangle = new Rectangle(192, 128, 64, 64);
+    //Tell the texture to use that rectangular section
+    texture.frame = rectangle;
+    //Create the sprite from the texture
+    var rocket = new Sprite(texture);
+    //Position the rocket sprite on the canvas
+    rocket.x = 32;
+    rocket.y = 32;
+    //Optionally use `pivot` to move the sprite's x and y position
+    /*
+    rocket.pivot.set(32, 32);
+    rocket.rotation = 0.3;
+    console.log(rocket.position)
+    */
+    //Add the rocket to the stage
+    stage.addChild(rocket);
+
     //Render the stage
     renderer.render(stage);
   }
-  //The `randomInt` helper function
-  function randomInt(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-  }
+
 }
